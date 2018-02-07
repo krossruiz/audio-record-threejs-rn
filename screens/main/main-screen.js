@@ -1,23 +1,34 @@
 import Expo, { Permissions, Audio } from 'expo';
 import React from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
-import { Provider } from 'react-redux';
-import store from './store';
 
 import ExpoTHREE, { THREE } from 'expo-three';
-import ThreeComponent from './screens/main/three-component';
-import MainScreen from './screens/main/main-screen';
+import ThreeComponent from './three-component';
+
+import { connect } from 'react-redux';
+import { startCube, stopCube } from '../../actions/cube-actions';
 
 
-export default class App extends React.Component {
+class MainScreen extends React.Component {
 
   render() {
     // Create an `Expo.GLView` covering the whole screen, tell it to call our
     // `_onGLContextCreate` function once it's initialized.
     return (
-      <Provider store={store}>
-        <MainScreen></MainScreen>
-      </Provider>
+      <View style={{flex:1}}>
+        <ThreeComponent></ThreeComponent>
+        <Text style={{
+          textAlign: "center",
+          fontSize: 30,
+          margin: 20
+        }}>
+          {this.props.cubeState.message}
+        </Text>
+        <Button
+          title="Press Me!"
+          onPress={this.taco}
+        ></Button>
+      </View>
     );
   }
 
@@ -26,7 +37,12 @@ export default class App extends React.Component {
   // This is called by the `Expo.GLView` once it's initialized
 
   taco = () => {
-
+    if(this.props.cubeState.cubeIsRotating == false){
+      this.props.startCube();
+    }
+    if(this.props.cubeState.cubeIsRotating == true) {
+      this.props.stopCube();
+    }
   }
 
   _onGLContextCreate = async gl => {
@@ -64,3 +80,9 @@ export default class App extends React.Component {
 
   };
 }
+
+const mapStateToProps = ({ cubeState }) => ({
+  cubeState
+});
+
+export default connect(mapStateToProps, { startCube, stopCube })(MainScreen);

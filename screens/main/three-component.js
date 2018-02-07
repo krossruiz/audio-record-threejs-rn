@@ -4,8 +4,11 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import ExpoTHREE, { THREE } from 'expo-three';
 
+import { connect } from 'react-redux';
+import { startCube } from '../../actions/cube-actions';
 
-export default class ThreeComponent extends React.Component {
+
+class ThreeComponent extends React.Component {
   render() {
     // Create an `Expo.GLView` covering the whole screen, tell it to call our
     // `_onGLContextCreate` function once it's initialized.
@@ -53,9 +56,10 @@ export default class ThreeComponent extends React.Component {
 
       let render3D = () => {
         requestAnimationFrame(render3D);
-
-        cube.rotation.x += 0.07;
-        cube.rotation.y += 0.04;
+        if(this.props.cubeState.cubeIsRotating == true){
+          cube.rotation.x += 0.07;
+          cube.rotation.y += 0.04;
+        }
 
         renderer.render(scene, camera);
 
@@ -69,3 +73,9 @@ export default class ThreeComponent extends React.Component {
 
   };
 }
+
+const mapStateToProps = ({ cubeState }) => ({
+  cubeState
+});
+
+export default connect(mapStateToProps, { startCube })(ThreeComponent);
